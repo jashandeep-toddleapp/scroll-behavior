@@ -298,9 +298,9 @@ export default class ScrollBehavior {
   }
 
   _getSavedScrollTarget(key, location) {
-    if (location.action === 'PUSH') {
-      return null;
-    }
+    // if (location.action === 'PUSH') {
+    //   return null;
+    // }
 
     return this._stateStorage.read(location, key);
   }
