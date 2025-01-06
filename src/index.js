@@ -38,10 +38,12 @@ export default class ScrollBehavior {
       try {
         window.history.scrollRestoration = 'manual';
 
-        // Scroll restoration persists across page reloads. We want to reset
-        // this to the original value, so that we can let the browser handle
-        // restoring the initial scroll position on server-rendered pages.
-        on(window, 'beforeunload', this._restoreScrollRestoration);
+        /**
+         * Disabling scroll restoration on reload
+         * Firefox automatically restores scroll positions on container elements (e.g., divs),
+         * which conflicts with our desired functionality.
+         */
+        // on(window, 'beforeunload', this._restoreScrollRestoration);
       } catch (e) {
         this._oldScrollRestoration = null;
       }
@@ -151,19 +153,29 @@ export default class ScrollBehavior {
     });
   }
 
-  _restoreScrollRestoration = () => {
-    /* istanbul ignore if: not supported by any browsers on Travis */
-    if (this._oldScrollRestoration) {
-      try {
-        window.history.scrollRestoration = this._oldScrollRestoration;
-      } catch (e) {
-        /* silence */
-      }
-    }
-  };
+  /*
+   * Commenting out the following function as it is no longer needed.
+   * Previously, it was used to set the browser's native scroll restoration to "auto"
+   * during the "beforeUnload" event and the unmount phase of the top-level AppContainer component.
+   */
+  // _restoreScrollRestoration = () => {
+  //   /* istanbul ignore if: not supported by any browsers on Travis */
+  //   if (this._oldScrollRestoration) {
+  //     try {
+  //       window.history.scrollRestoration = this._oldScrollRestoration;
+  //     } catch (e) {
+  //       /* silence */
+  //     }
+  //   }
+  // };
 
   stop() {
-    this._restoreScrollRestoration();
+    /*
+     * Commenting out the following code because it executes during the component's unmount phase
+     * and is located in the topmost parent container.
+     * Typically, we handle exploration within the parent-level component itself.
+     */
+    // this._restoreScrollRestoration();
 
     off(window, 'scroll', this._onWindowScroll);
     this._cancelCheckWindowScroll();
